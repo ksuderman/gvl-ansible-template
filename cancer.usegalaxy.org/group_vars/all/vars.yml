@@ -183,6 +183,8 @@ cm_helm_values: |
                     galaxy:
                       admin_users: {{ admin_users }}
                       id_secret: {{ galaxy_id_secret }}
+                      library_import_dir: ~
+                      user_library_import_dir: ~
     helmsman_config:
       repositories:
          - name: cloudve
