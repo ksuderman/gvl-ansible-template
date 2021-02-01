@@ -23,6 +23,7 @@ rabbitmq_erlang_cookie: "{{ vault_rabbitmq_erlang_cookie }}"
 # Galaxy settings
 galaxy_postgresql_password: "{{ vault_galaxy_postgresql_password }}"
 galaxy_postgresql_postgres_password: "{{ vault_galaxy_postgresql_postgres_password }}"
+galaxy_postgresql_primary_password: "{{ vault_galaxy_postgresql_primary_password }}"
 galaxy_oidc_client_secret: "{{ vault_galaxy_oidc_client_secret }}"
 galaxy_id_secret: "{{ vault_galaxy_id_secret }}"
 
@@ -33,7 +34,7 @@ kube_cloud_conf: '[Global]'
 #======================
 # General Settings
 #======================
-admin_users: nuwan@usegvl.org
+admin_users: sargentl@ohsu.edu,jalili.vahid@gmail.com,nuwan.goonasekera@unimelb.edu.au
 cluster_hostname: cancer.usegalaxy.org
 cluster_admin_email: "admin@{{ cluster_hostname }}"
 support_alert_email: help@genome.edu.au
@@ -168,7 +169,12 @@ cm_helm_values: |
               upgrade: true
               install_template: galaxy
               values:
+                extraVolumes: {}
+                extraVolumeMounts: {}
                 postgresql:
+                  enabled: false
+                  operator:
+                    primaryUserPassword: "{{ galaxy_postgresql_primary_password }}"
                   galaxyDatabasePassword: "{{ galaxy_postgresql_password }}"
                   postgresqlPassword: "{{ galaxy_postgresql_postgres_password }}"
                   postgresqlPostgresPassword: "{{ galaxy_postgresql_postgres_password }}"
@@ -185,20 +191,27 @@ cm_helm_values: |
            url: https://jupyterhub.github.io/helm-chart/
          - name: rancher
            url: https://releases.rancher.com/server-charts/stable
-         - name: alex
-           url: https://raw.githubusercontent.com/almahmoud/helm-charts/nextclouddev/
+         - name: zalando
+           url: https://raw.githubusercontent.com/zalando/postgres-operator/master/charts/postgres-operator/
       template_registries:
         - name: cloudve
           url: https://raw.githubusercontent.com/galaxyproject/cloudlaunch-registry/master/template-registry.yaml
       charts:
+        postgres_operator:
+          name: zalando/postgres-operator
+          namespace: postgres-operator
+          create_namespace: true
+          upgrade: true
         proxyinjector:
           name: cloudve/proxyinjector
           namespace: cloudman
           create_namespace: false
+          upgrade: true
         rancher:
           name: rancher/rancher
           namespace: cattle-system
           create_namespace: true
+          upgrade: true
           values:
     {% if (cluster_hostname | ipaddr) %}
             hostname: rancher.{{ ansible_default_ipv4.address }}.xip.io
