@@ -169,6 +169,9 @@ cm_helm_values: |
               upgrade: true
               install_template: galaxy
               values:
+                ingress:
+                  path: "/"
+                  access_path: "/"
                 extraVolumes: {}
                 extraVolumeMounts: {}
                 postgresql:
@@ -185,6 +188,18 @@ cm_helm_values: |
                       id_secret: {{ galaxy_id_secret }}
                       library_import_dir: ~
                       user_library_import_dir: ~
+                  oidc_backends_config.xml: |
+                    <?xml version="1.0"?>
+                    <OIDC>
+                        <provider name="keycloak">
+                            <url>https://{{ cluster_hostname }}/auth/realms/master</url>
+                            <client_id>projman-initial</client_id>
+                            <client_secret>{{ galaxy_oidc_client_secret }}</client_secret>
+                            <redirect_uri>https://{{ cluster_hostname }}/authnz/keycloak/callback</redirect_uri>
+                            <enable_idp_logout>true</enable_idp_logout>
+                        </provider>
+                    </OIDC>
+                    
     helmsman_config:
       repositories:
          - name: cloudve
@@ -281,6 +296,8 @@ cm_helm_values: |
                     - "{{ cluster_hostname }}"
     {% endif %}
        ingress:
+          path: "/cluster"
+          access_path: "/cluster"
           annotations:
              kubernetes.io/tls-acme: "true"
              cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -350,7 +367,7 @@ cm_helm_values: |
              dbPassword: "{{ cloudman_postgresql_keycloak_password }}"
            ingress:
              enabled: true
-             path: /auth
+             path: /auth/
              annotations:
                 kubernetes.io/tls-acme: "true"
                 cert-manager.io/cluster-issuer: letsencrypt-prod
