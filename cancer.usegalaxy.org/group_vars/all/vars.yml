@@ -185,6 +185,7 @@ cm_helm_values: |
                   galaxy.yml:
                     galaxy:
                       admin_users: {{ admin_users }}
+                      conda_ensure_channels: "conda-forge,bioconda,ohsu-comp-bio,defaults"
                       id_secret: {{ galaxy_id_secret }}
                       library_import_dir: ~
                       user_library_import_dir: ~
