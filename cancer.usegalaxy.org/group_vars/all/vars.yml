@@ -14,6 +14,10 @@ grafana_password: "{{ vault_grafana_password }}"
 influxdb_password: "{{ vault_influxdb_password }}"
 prometheus_alert_manager_password: "{{ vault_prometheus_alert_manager_password }}"
 cm_skip_cloudman: 'false'
+# Cloudman Keycloak Settings
+cm_keycloak_operator_fork: "cloudve/keycloak-operator"
+
+
 
 # CloudMan's rabbitmq service
 rabbitmq_password: "{{ vault_rabbitmq_password }}"
@@ -225,25 +229,6 @@ cm_helm_values: |
           namespace: cloudman
           create_namespace: false
           upgrade: true
-        rancher:
-          name: rancher/rancher
-          namespace: cattle-system
-          create_namespace: true
-          upgrade: true
-          values:
-    {% if (cluster_hostname | ipaddr) %}
-            hostname: rancher.{{ ansible_default_ipv4.address }}.xip.io
-    {% else %}
-            hostname: rancher.{{ cluster_hostname }}
-    {% endif %}
-            ingress:
-              tls:
-                source: letsEncrypt
-            letsEncrypt:
-              email: "{{ cluster_admin_email }}"
-              environment: "production"
-              ingress:
-                class: nginx
 
     cloudlaunch:
        image:
@@ -312,7 +297,7 @@ cm_helm_values: |
                hosts:
                  - "{{ cluster_hostname }}"
     {% endif %}
-    prometheus:
+    kubeprometheus:
        prometheusSpec:
           storageSpec:
             volumeClaimTemplate:
@@ -337,44 +322,15 @@ cm_helm_values: |
              server:
                 root_url: "https://{{ cluster_hostname }}/grafana"
              auth.generic_oauth:
-                auth_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/auth"
-                token_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/token"
-                api_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/userinfo"
+                auth_url: "https://{{ keycloak_hostname }}/auth/realms/{{ cm_keycloak_realm_name }}/protocol/openid-connect/auth"
+                token_url: "https://{{ keycloak_hostname }}/auth/realms/{{ cm_keycloak_realm_name }}/protocol/openid-connect/token"
+                api_url: "https://{{ keycloak_hostname }}/auth/realms/{{ cm_keycloak_realm_name }}/protocol/openid-connect/userinfo"
           ingress:
              annotations:
                 kubernetes.io/tls-acme: "true"
                 cert-manager.io/cluster-issuer: letsencrypt-prod
                 nginx.ingress.kubernetes.io/secure-backends: "true"
              hosts:
-                - ~
-    {% if not (cluster_hostname | ipaddr) %}
-                - "{{ cluster_hostname }}"
-             tls:
-                - secretName: "{{ cluster_hostname | replace('.', '-') }}-key"
-                  hosts:
-                    - "{{ cluster_hostname }}"
-    {% endif %}
-    keycloak:
-       keycloak:
-           resources:
-             requests:
-                cpu: 100m
-                memory: 750Mi
-             limits:
-                cpu: 1000m
-                memory: 2000Mi
-           password: "{{ cluster_password }}"
-           persistence:
-             dbPassword: "{{ cloudman_postgresql_keycloak_password }}"
-           ingress:
-             enabled: true
-             path: /auth/
-             annotations:
-                kubernetes.io/tls-acme: "true"
-                cert-manager.io/cluster-issuer: letsencrypt-prod
-                nginx.ingress.kubernetes.io/secure-backends: "true"
-             hosts:
-                - ~
     {% if not (cluster_hostname | ipaddr) %}
                 - "{{ cluster_hostname }}"
              tls:
