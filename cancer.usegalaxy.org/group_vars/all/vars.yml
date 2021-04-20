@@ -277,7 +277,7 @@ cm_helm_values: |
                 - secretName: "{{ cluster_hostname | replace('.', '-') }}-key"
                   hosts:
                     - "{{ cluster_hostname }}"
-      {% endif %}
+    {% endif %}
     influxdb:
       setDefaultUser:
         user:
