@@ -2,6 +2,8 @@
 # Vault Secrets
 #======================
 rke_registration_token: "{{ vault_rke_registration_token }}"
+rke_version: "v1.19.9+rke2r1"
+rke_container_image: "rancher/rke2-runtime:v1.19.9-rke2r1"
 cluster_password: "{{ vault_cluster_password }}"
 
 # Cloudman Settings
@@ -63,7 +65,7 @@ cm_initial_cluster_data:
           ansible_ssh_private_key_file=pk
           ansible_ssh_extra_args=''-o StrictHostKeyChecking=no'''
         ordinal: 0
-        url: https://github.com/almahmoud/cloudman-boot
+        url: https://github.com/cloudve/cloudman-boot
       runner: ansible
       sshUser: ubuntu
     config_cloudlaunch:
