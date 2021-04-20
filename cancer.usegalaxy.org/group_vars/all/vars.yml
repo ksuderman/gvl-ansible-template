@@ -15,7 +15,7 @@ influxdb_password: "{{ vault_influxdb_password }}"
 prometheus_alert_manager_password: "{{ vault_prometheus_alert_manager_password }}"
 cm_skip_cloudman: 'false'
 # Cloudman Keycloak Settings
-cm_keycloak_operator_fork: "cloudve/keycloak-operator"
+cm_keycloak_operator_fork: "keycloak/keycloak-operator"
 
 
 
@@ -38,7 +38,7 @@ kube_cloud_conf: '[Global]'
 #======================
 # General Settings
 #======================
-admin_users: sargentl@ohsu.edu,jalili.vahid@gmail.com,nuwan.goonasekera@unimelb.edu.au
+admin_users: sargentl@ohsu.edu,nuwan.goonasekera@unimelb.edu.au,almahmoud@jhu.edu
 cluster_hostname: cloudman.cancer.usegalaxy.org
 cluster_admin_email: "admin@{{ cluster_hostname }}"
 support_alert_email: help@genome.edu.au
@@ -175,31 +175,27 @@ cm_helm_values: |
       cloudman
           create_namespace: false
     projman_config:
-      projects:
-          initial:
-          charts:
-            galaxy:
-              install_template: galaxy
+      projects: {}
     cloudlaunch:
       image:
           repository: galaxy/cloudman-ui
           tag: latest
-        resources:
+      resources:
           requests:
             cpu: 100m
-            memory: 500Mi
-        limits:
+            memory: 250Mi
+          limits:
             cpu: 1000m
             memory: 3000Mi
       cloudlaunchserver:
-            image:
+          image:
             repository: galaxy/cloudman-server
             tag: latest
-            resources:
+          resources:
             requests:
-              cpu: 500m
-              memory: 1500Mi
-              limits:
+              cpu: 200m
+              memory: 500Mi
+            limits:
               cpu: 1000m
               memory: 5000Mi
           admin_password:
