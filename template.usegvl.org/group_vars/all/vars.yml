@@ -361,4 +361,5 @@ cm_helm_values: |
             password: {{ influxdb_password }}
     global:
        domain: "{{ cluster_hostname }}"
+       keycloak_hostname: "{{ keycloak_hostname }}"
        deployment_name: "{{ cm_deployment_name }}"
