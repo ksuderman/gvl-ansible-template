@@ -1,0 +1,368 @@
+#======================
+# Vault Secrets
+#======================
+rke_registration_token: "{{ vault_rke_registration_token }}"
+cluster_password: "{{ vault_cluster_password }}"
+
+# Cloudman Settings
+cloudman_postgresql_password: "{{ vault_cloudman_postgresql_password }}"
+cloudman_postgresql_postgres_password: "{{ vault_cloudman_postgresql_postgres_password }}"
+cloudman_postgresql_keycloak_password: "{{ vault_cloudman_postgresql_keycloak_password }}"
+cloudman_cloudlaunch_secret_key: "{{ vault_cloudman_cloudlaunch_secret_key }}"
+cloudman_cloudlaunch_fernet_keys: "{{ vault_cloudman_cloudlaunch_fernet_keys }}"
+grafana_password: "{{ vault_grafana_password }}"
+influxdb_password: "{{ vault_influxdb_password }}"
+prometheus_alert_manager_password: "{{ vault_prometheus_alert_manager_password }}"
+cm_skip_cloudman: 'false'
+
+# CloudMan's rabbitmq service
+rabbitmq_password: "{{ vault_rabbitmq_password }}"
+rabbitmq_management_password: "{{ vault_rabbitmq_management_password }}"
+rabbitmq_erlang_cookie: "{{ vault_rabbitmq_erlang_cookie }}"
+
+# Galaxy settings
+galaxy_postgresql_password: "{{ vault_galaxy_postgresql_password }}"
+galaxy_postgresql_postgres_password: "{{ vault_galaxy_postgresql_postgres_password }}"
+galaxy_oidc_client_secret: "{{ vault_galaxy_oidc_client_secret }}"
+galaxy_id_secret: "{{ vault_galaxy_id_secret }}"
+
+# cloud settings
+kube_cloud_provider: aws
+kube_cloud_conf: '[Global]'
+
+#======================
+# General Settings
+#======================
+admin_users: suderman@jhu.edu
+cluster_hostname: bench3.usegvl.org
+cluster_admin_email: "admin@{{ cluster_hostname }}"
+support_alert_email: suderman@jhu.edu
+cm_chart_version: ''
+cm_charts_repo: https://raw.githubusercontent.com/cloudve/helm-charts/master/
+cm_deployment_name: bench3-usegvl-org
+cm_initial_storage_size: ''
+
+cm_initial_cluster_data:
+  app_config:
+    config_appliance:
+      playbooks:
+      - inventory_template: '[controllers]
+
+          ${host}
+
+
+          [agents]
+
+
+          [rke_cluster:children]
+
+          controllers
+
+          agents
+
+
+          [all:vars]
+
+          ansible_ssh_port=22
+
+          ansible_user=''${user}''
+
+          ansible_ssh_private_key_file=pk
+
+          ansible_ssh_extra_args=''-o StrictHostKeyChecking=no'''
+        ordinal: 0
+        url: https://github.com/CloudVE/cloudman-boot
+      runner: ansible
+      sshUser: ubuntu
+    config_cloudlaunch:
+      customImageID: null
+      firewall:
+      - rules:
+        - cidr: 0.0.0.0/0
+          from: '22'
+          protocol: tcp
+          to: '22'
+        - cidr: 0.0.0.0/0
+          from: '80'
+          protocol: tcp
+          to: '80'
+        - cidr: 0.0.0.0/0
+          from: '443'
+          protocol: tcp
+          to: '443'
+        - from: '1'
+          protocol: tcp
+          src_group: cloudlaunch-cm2
+          to: '65535'
+        - from: '1'
+          protocol: udp
+          src_group: cloudlaunch-cm2
+          to: '65535'
+        securityGroup: cloudlaunch-cm2
+      gateway: null
+      hostnameConfig:
+        dnsRecordName: benchmarking
+        dnsZone:
+          admin_email: null
+          id: -hostedzone-Z01092892MLURSVI2K4L4
+          name: usegvl.org.
+          records: http://launch.usegalaxy.org/cloudlaunch/api/v1/infrastructure/clouds/aws/regions/us-east-1/zones/default/dns/dns_zones/-hostedzone-Z01092892MLURSVI2K4L4/records/
+          url: http://launch.usegalaxy.org/cloudlaunch/api/v1/infrastructure/clouds/aws/regions/us-east-1/zones/default/dns/dns_zones/-hostedzone-Z01092892MLURSVI2K4L4/
+        hostnameType: cloud_dns
+      keyPair: null
+      network: null
+      provider_settings:
+        ebsOptimised: null
+        volumeIOPS: null
+      rootStorageSize: 42
+      rootStorageType: volume
+      staticIP: null
+      subnet: null
+      vmType: m5.xlarge
+    deployment_config:
+      name: benchmarking-usegvl-org
+  cloud_config:
+    image:
+      description: Ubuntu Server 20.04 LTS (HVM
+      image_id: ami-0885b1f6bd170450c
+      name: Ubuntu 20.04 LTS
+    credentials:
+      aws_access_key: "{{ vault_aws_access_key }}"
+      aws_secret_key: "{{ vault_aws_secret_key }}"
+    target:
+      id: 11
+      resourcetype: CloudDeploymentTarget
+      target_zone:
+        cloud:
+          access_instructions_url: https://aws-portal.amazon.com/gp/aws/developer/account/index.html?action=access-key
+          id: aws
+          name: Amazon Web Services
+          resourcetype: AWSCloud
+        name: null
+        region:
+          cloud: aws
+          cloudbridge_settings: null
+          ec2_endpoint_url: https://ec2.us-east-1.amazonaws.com
+          ec2_is_secure: true
+          ec2_validate_certs: true
+          id: 11
+          name: us-east-1
+          region_id: us-east-1
+          resourcetype: AWSRegion
+          s3_endpoint_url: https://s3.amazonaws.com
+          s3_is_secure: true
+          s3_validate_certs: true
+        zone_id: default
+  host_config:
+    host_address: bench3.usegvl.org
+    instance_id: i-09a3f817ef0c2c0d8
+    public_ip: 3.81.188.204
+    ssh_private_key: "{{ vault_ansible_ssh_key }}"
+    ssh_public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDSAQrluuwCQrjx6K/BmbyW4w/P2AAvF3s5kQWYNJZP1KOLo/m3M1K6TTIgT0p1cQsWp3AEo5R+aqUk2md0dKQzrZwIAs7iIqMWxDPckEe2CkQ296BtQXC5imWgl/QwWYlvxSoqy6Hq4bp/x+SvRdEPybQFQn+L6/TL0Z2545s24yoeDPAchF6GwEpY+WhSo+iAj0AjtLmODhcQdmkZIx6gyb5+F2lXiky0pOOMcTfYU4hV7ubYEOPriZ90Uo0uigzzDc8J61G1mJJ3vX6PV9yTOQXB+FZuuc7JFNtDdBQdhTwSjX35/x4KHigfoVNe45ahqk9/tg3Rl+5t5Jzr/qL
+    ssh_user: ubuntu
+
+cm_helm_values: |
+    cluster_type: KUBE_RKE
+    rke_registration_server: {{ rke_registration_server }}
+    rke_registration_token: {{ rke_registration_token }}
+    cm_initial_cluster_data: |
+      {{ cm_initial_cluster_data | default('') | to_nice_yaml(indent=2) | indent(width=2) }}
+
+    projman_config:
+      projects:
+        initial:
+          charts:
+            galaxy:
+              release_name: galaxy
+              upgrade: true
+              install_template: galaxy
+              values:
+                postgresql:
+                  galaxyDatabasePassword: "{{ galaxy_postgresql_password }}"
+                  postgresqlPassword: "{{ galaxy_postgresql_postgres_password }}"
+                  postgresqlPostgresPassword: "{{ galaxy_postgresql_postgres_password }}"
+                configs:
+                  galaxy.yml:
+                    galaxy:
+                      admin_users: {{ admin_users }}
+                      id_secret: {{ galaxy_id_secret }}
+    helmsman_config:
+      repositories:
+         - name: cloudve
+           url: https://raw.githubusercontent.com/CloudVE/helm-charts/master/
+         - name: jupyterhub
+           url: https://jupyterhub.github.io/helm-chart/
+         - name: rancher
+           url: https://releases.rancher.com/server-charts/stable
+         - name: alex
+           url: https://raw.githubusercontent.com/almahmoud/helm-charts/nextclouddev/
+      template_registries:
+        - name: cloudve
+          url: https://raw.githubusercontent.com/galaxyproject/cloudlaunch-registry/master/template-registry.yaml
+      charts:
+        proxyinjector:
+          name: cloudve/proxyinjector
+          namespace: cloudman
+          create_namespace: false
+        rancher:
+          name: rancher/rancher
+          namespace: cattle-system
+          create_namespace: true
+          values:
+    {% if (cluster_hostname | ipaddr) %}
+            hostname: rancher.{{ ansible_default_ipv4.address }}.xip.io
+    {% else %}
+            hostname: rancher.{{ cluster_hostname }}
+    {% endif %}
+            ingress:
+              tls:
+                source: letsEncrypt
+            letsEncrypt:
+              email: "{{ cluster_admin_email }}"
+              environment: "production"
+              ingress:
+                class: nginx
+
+    cloudlaunch:
+       image:
+          repository: galaxy/cloudman-ui
+          tag: latest
+       resources:
+          requests:
+            cpu: 100m
+            memory: 300Mi
+          limits:
+            cpu: 1000m
+            memory: 3000Mi
+       cloudlaunchserver:
+          image:
+            repository: galaxy/cloudman-server
+            tag: latest
+          podAnnotations:
+            workaround_force_upgrade:  "{{ lookup('password', '/dev/null chars=ascii_lowercase,digits length=8') }}"
+          resources:
+            requests:
+              cpu: 300m
+              memory: 1500Mi
+            limits:
+              cpu: 1000m
+              memory: 5000Mi
+          admin_password: "{{ cluster_password }}"
+          secret_key: "{{ cloudman_cloudlaunch_secret_key }}"
+          fernet_keys: {{ cloudman_cloudlaunch_fernet_keys | to_yaml }}
+          rabbitmq:
+            rabbitmqPassword: "{{ rabbitmq_password }}"
+            managementPassword: "{{ rabbitmq_management_password }}"
+            rabbitmqErlangCookie: "{{ rabbitmq_erlang_cookie }}"
+          postgresql:
+             postgresqlPassword: "{{ cloudman_postgresql_password }}"
+             postgresqlPostgresPassword: "{{ cloudman_postgresql_postgres_password }}"
+             persistence:
+                storageClass: "ebs"
+
+          ingress:
+             annotations:
+                kubernetes.io/tls-acme: "true"
+                cert-manager.io/cluster-issuer: letsencrypt-prod
+                nginx.ingress.kubernetes.io/secure-backends: "true"
+             hosts:
+                - ~
+    {% if not (cluster_hostname | ipaddr) %}
+                - "{{ cluster_hostname }}"
+             tls:
+                - secretName: "{{ cluster_hostname | replace('.', '-') }}-key"
+                  hosts:
+                    - "{{ cluster_hostname }}"
+    {% endif %}
+       ingress:
+          annotations:
+             kubernetes.io/tls-acme: "true"
+             cert-manager.io/cluster-issuer: letsencrypt-prod
+             nginx.ingress.kubernetes.io/secure-backends: "true"
+          hosts:
+             - ~
+    {% if not (cluster_hostname | ipaddr) %}
+             - "{{ cluster_hostname }}"
+          tls:
+             - secretName: "{{ cluster_hostname | replace('.', '-') }}-key"
+               hosts:
+                 - "{{ cluster_hostname }}"
+    {% endif %}
+    prometheus:
+       prometheusSpec:
+          storageSpec:
+            volumeClaimTemplate:
+              spec:
+                storageClassName: ebs
+                accessModes: ["ReadWriteOnce"]
+                resources:
+                  requests:
+                    storage: 50Gi
+       persistence:
+          storageClass: "nfs"
+          size: 8Gi
+       alertmanager:
+          config:
+             global:
+               http_config:
+                  basic_auth:
+                     password: "{{ prometheus_alert_manager_password }}"
+       grafana:
+          adminPassword: {{ grafana_password }}
+          grafana.ini:
+             server:
+                root_url: "https://{{ cluster_hostname }}/grafana"
+             auth.generic_oauth:
+                auth_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/auth"
+                token_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/token"
+                api_url: "https://{{ cluster_hostname }}/auth/realms/master/protocol/openid-connect/userinfo"
+          ingress:
+             annotations:
+                kubernetes.io/tls-acme: "true"
+                cert-manager.io/cluster-issuer: letsencrypt-prod
+                nginx.ingress.kubernetes.io/secure-backends: "true"
+             hosts:
+                - ~
+    {% if not (cluster_hostname | ipaddr) %}
+                - "{{ cluster_hostname }}"
+             tls:
+                - secretName: "{{ cluster_hostname | replace('.', '-') }}-key"
+                  hosts:
+                    - "{{ cluster_hostname }}"
+    {% endif %}
+    keycloak:
+       keycloak:
+           resources:
+             requests:
+                cpu: 100m
+                memory: 750Mi
+             limits:
+                cpu: 1000m
+                memory: 2000Mi
+           password: "{{ cluster_password }}"
+           persistence:
+             dbPassword: "{{ cloudman_postgresql_keycloak_password }}"
+           ingress:
+             enabled: true
+             path: /auth
+             annotations:
+                kubernetes.io/tls-acme: "true"
+                cert-manager.io/cluster-issuer: letsencrypt-prod
+                nginx.ingress.kubernetes.io/secure-backends: "true"
+             hosts:
+                - ~
+    {% if not (cluster_hostname | ipaddr) %}
+                - "{{ cluster_hostname }}"
+             tls:
+                - secretName: "{{ cluster_hostname | replace('.', '-') }}-key"
+                  hosts:
+                    - "{{ cluster_hostname }}"
+    {% endif %}
+    influxdb:
+      setDefaultUser:
+        user:
+            password: {{ influxdb_password }}
+    global:
+       domain: "{{ cluster_hostname }}"
+       keycloak_hostname: "{{ keycloak_hostname }}"
+       deployment_name: "{{ cm_deployment_name }}"
